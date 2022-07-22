@@ -6,34 +6,15 @@ import {
   EntityDescription,
   PolylineGraphics,
   PolygonGraphics,
+  Label,
+  LabelCollection
 } from "resium";
-import { Cartesian3, Color, createWorldTerrain } from "cesium";
+import { Cartesian3, Color, createWorldTerrain, Transforms } from "cesium";
 import * as Cesium from "cesium";
 import { getDataXmlAPI, handlerData } from "./data/loadXML";
+import {getPointFF,getPointFL,displayLabelLineLength,area, calPerimeter} from './data/utils'
 
 const terrainProvider = createWorldTerrain();
-
-function getPointFL(l, points) {
-  let arr = [];
-  l.map((ii) =>
-    Object.entries(points).map(
-      ([k, v]) => k === ii && v.map((vp) => arr.push(parseFloat(vp)))
-    )
-  );
-  return arr;
-}
-function getPointFF(ll, points, lines) {
-  let arr = [];
-  ll.map((l) =>
-    Object.entries(lines).map(
-      ([k, v]) => k === l && arr.push(getPointFL(v, points))
-    )
-  );
-  return arr
-    .join()
-    .split(",")
-    .map((p) => parseFloat(p));
-}
 
 function App() {
   const [data, setData] = useState(null);
@@ -68,6 +49,19 @@ function App() {
           <EntityDescription>
             <h1>{i}</h1>
           </EntityDescription>
+          <LabelCollection show={true}>
+            <Label
+              text= {`${displayLabelLineLength(getPointFL(i, points)).distance}ft`}
+              font={"17px Bold Arial"}
+              outlineColor={Cesium.Color.CYAN}
+              position={
+                // new Cesium.Cartesian3.fromDegrees(
+                displayLabelLineLength(getPointFL(i, points)).middle
+                //)
+              }
+              fillColor={Cesium.Color.YELLOW}
+            />
+          </LabelCollection>
         </Entity>
       );
     });
@@ -75,12 +69,14 @@ function App() {
   const Face =
     faces &&
     Object.values(faces).map((i) => {
+      //console.log()
       return (
         <Entity name="BoxGraphics">
           <PolygonGraphics
             hierarchy={Cartesian3.fromDegreesArrayHeights(
               getPointFF(i, points, lines)
             )}
+            
             outline={true}
             outlineWidth={10}
             outlineColor={Color.WHITE.withAlpha(1.0)}
@@ -90,12 +86,27 @@ function App() {
           <EntityDescription>
             <h1>{i}</h1>
           </EntityDescription>
+          <LabelCollection show={true}>
+            <Label
+              text= {`area: ${area(getPointFF(i, points, lines))}\nplane: ${i}\nperimeter: ${calPerimeter(getPointFF(i, points, lines)).perimeter}ft`}
+              font={"17px Bold Arial"}
+              outlineColor={Cesium.Color.CYAN}
+              position={
+                // new Cesium.Cartesian3.fromDegrees(
+                  calPerimeter(getPointFF(i, points, lines)).midPoint
+                //)
+              }
+              showBackground={true}
+              fillColor={Cesium.Color.YELLOW}
+            />
+          </LabelCollection>
         </Entity>
       );
     });
 
   return (
-    <Viewer full terrainProvider={terrainProvider}>
+    <Viewer full terrainProvider={terrainProvider}
+    >
       {Face}
 
       {Line}
