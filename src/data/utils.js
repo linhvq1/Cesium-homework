@@ -33,7 +33,7 @@ function meterToFeet(met) {
   return (met * 3.28084).round(2);
 }
 
-export function displayLabelLineLength(arrPoints) {
+export function displayLabelLineLength(arrPoints, measurement) {
   const firstPoint = new Cesium.Cartesian3.fromDegrees(
     arrPoints.slice(0, 3)[0],
     arrPoints.slice(0, 3)[1],
@@ -52,7 +52,10 @@ export function displayLabelLineLength(arrPoints) {
   );
 
   return {
-    distance: meterToFeet(Cesium.Cartesian3.distance(firstPoint, endPoint)),
+    distance:
+      measurement === "feet"
+        ? meterToFeet(Cesium.Cartesian3.distance(firstPoint, endPoint))
+        : Cesium.Cartesian3.distance(firstPoint, endPoint).round(2),
     middle: new Cesium.Cartesian3.fromDegrees(
       middlePoint.x,
       middlePoint.y,
@@ -125,7 +128,7 @@ function uniqueArrayPoint(arr) {
  * @param {Array} poly - array include all points of polygon
  * @returns {Float} return polygon area
  */
-export function area(poly) {
+export function area(poly, measurement) {
   poly = uniqueArrayPoint(poly);
 
   if (poly.length < 3) return 0;
@@ -149,7 +152,9 @@ export function area(poly) {
       Cesium.Cartesian3.fromDegreesArrayHeights(poly[2])[0]
     )
   );
-  return meterToFeet(Math.abs(result / 2));
+  return measurement === "feet"
+    ? meterToFeet(Math.abs(result / 2))
+    : Math.abs(result / 2).round(2);
 }
 
 ////////////
@@ -183,9 +188,10 @@ function getMiddlePoint(arrPoints) {
   );
 }
 
-export function calPerimeter(arr) {
+export function calPerimeter(arr, measurement) {
   let lineArray = sliceArrayPoints(sliceArrayPoints(arr, 3), 2).map((i) =>
-    i.join()
+    i
+      .join()
       .split(",")
       .map((p) => parseFloat(p))
   );
@@ -196,7 +202,8 @@ export function calPerimeter(arr) {
   }
 
   return {
-    perimeter: meterToFeet(perimeter),
+    perimeter:
+      measurement === "feet" ? meterToFeet(perimeter) : perimeter.round(2),
     midPoint: getMiddlePoint(lineArray[0]),
   };
 }
