@@ -52,6 +52,7 @@ function App() {
             name={k}
             id={k}
             focusPlane={false}
+            lineCompo={v}
             measurement={measurement}
             arrayPoint={getPointFF(v, points, lines)}
             handleClickPlane={handleClickPlane}
@@ -71,6 +72,7 @@ function App() {
             id={k}
             key={k}
             name={k}
+            focusPlane={false}
             measurement={measurement}
             arrayPoint={getPointFL(v, points)}
           />
@@ -84,11 +86,33 @@ function App() {
     if (!Cesium.defined(feature)) {
       return;
     }
+    let lineOfPlane;
     setPlaneObj((prevPlane) =>
-      prevPlane.map((i) =>
-        i.props.id === feature.id._id
+      prevPlane.map((i) => {
+        if (i.props.id === feature.id._id) lineOfPlane = i.props.lineCompo;
+        return i.props.id === feature.id._id
           ? { ...i, props: { ...i.props, focusPlane: !i.props.focusPlane } }
-          : { ...i, props: { ...i.props, focusPlane: false } }
+          : { ...i, props: { ...i.props, focusPlane: false } };
+      })
+    );
+
+    setLineObj((prevLine) =>
+      prevLine.map((ii) => ({
+        ...ii,
+        props: { ...ii.props, focusPlane: false },
+      }))
+    );
+
+    lineOfPlane.forEach((i) =>
+      setLineObj((prevLine) =>
+        prevLine.map((ii) =>
+          ii.props.id === i
+            ? {
+                ...ii,
+                props: { ...ii.props, focusPlane: !ii.props.focusPlane },
+              }
+            : { ...ii }
+        )
       )
     );
   };

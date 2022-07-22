@@ -10,7 +10,7 @@ import {
 import * as Cesium from "cesium";
 import { displayLabelLineLength } from "../data/utils";
 
-function LineGraph({ id, name, arrayPoint, measurement }) {
+function LineGraph({ id, name, arrayPoint, measurement, focusPlane }) {
   return (
     <Entity id={id} name="BoxGraphics">
       <PolylineGraphics
@@ -23,6 +23,7 @@ function LineGraph({ id, name, arrayPoint, measurement }) {
       </EntityDescription>
       <LabelCollection show={true}>
         <Label
+          show={focusPlane ? true : false}
           text={`${
             displayLabelLineLength(arrayPoint, measurement).distance
           } ${measurement}`}
