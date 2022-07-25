@@ -16,7 +16,7 @@ function App() {
   const [lines, setLines] = useState(null);
   const [points, setPoints] = useState(null);
   const [faces, setFaces] = useState(null);
-  const [measurement, setMeasurement] = useState("feet");
+  const [measurement, setMeasurement] = useState("meter");
   const [PlaneObj, setPlaneObj] = useState(null);
   const [lineObj, setLineObj] = useState(null);
 
@@ -53,14 +53,14 @@ function App() {
             id={k}
             focusPlane={false}
             lineCompo={v}
-            measurement={measurement}
+            measurement={"meter"}
             arrayPoint={getPointFF(v, points, lines)}
             handleClickPlane={handleClickPlane}
           />
         );
       });
     Face && setPlaneObj(Face);
-  }, [faces, measurement, lines, points]);
+  }, [faces, lines, points]);
 
   useEffect(() => {
     const Line =
@@ -73,13 +73,13 @@ function App() {
             key={k}
             name={k}
             focusPlane={false}
-            measurement={measurement}
+            measurement={"meter"}
             arrayPoint={getPointFL(v, points)}
           />
         );
       });
     Line && setLineObj(Line);
-  }, [faces, measurement, lines, points]);
+  }, [faces, lines, points]);
 
   const handleClickPlane = (e) => {
     const feature = viewer.scene.pick(e.position);
@@ -117,13 +117,28 @@ function App() {
     );
   };
 
+  const handleToggleMeasurement = (e) => {
+    setPlaneObj((prevPlane) =>
+      prevPlane.map((i) => ({ ...i, props: { ...i.props, measurement: e } }))
+    );
+    setLineObj((prevLine) =>
+      prevLine.map((ii) => ({
+        ...ii,
+        props: { ...ii.props, measurement: e },
+      }))
+    );
+  };
+
   return (
     <>
       <div className="absolute bg-white z-50 p-3 m-3 rounded-lg">
         <select
           className="focus:outline-none"
           value={measurement}
-          onChange={(e) => setMeasurement(e.target.value)}
+          onChange={(e) => {
+            setMeasurement(e.target.value);
+            handleToggleMeasurement(e.target.value);
+          }}
         >
           <option value="meter">meter</option>
           <option value="feet">feet</option>

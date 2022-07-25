@@ -41,7 +41,6 @@ function PolygonGraph({
       <EntityDescription>
         <h1>{name}</h1>
       </EntityDescription>
-      {console.log(focusPlane)}
       <LabelCollection show={true}>
         <Label
           show={focusPlane ? true : false}

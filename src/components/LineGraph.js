@@ -23,7 +23,7 @@ function LineGraph({ id, name, arrayPoint, measurement, focusPlane }) {
       </EntityDescription>
       <LabelCollection show={true}>
         <Label
-          show={focusPlane ? true : false}
+          show={focusPlane}
           text={`${
             displayLabelLineLength(arrayPoint, measurement).distance
           } ${measurement}`}
